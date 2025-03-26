@@ -14,7 +14,15 @@ RUN yarn install
 COPY backend/api ./api
 
 # Expose the port the app runs on
-EXPOSE 3001
+# Railway автоматически назначает порт через переменную PORT
+ENV PORT=3001
+
+# Set environment variables with defaults
+ENV MONGODB_URI=mongodb://mongo:27017/nuxtdb
+ENV NODE_ENV=production
+
+# Expose the port that Railway will use
+EXPOSE $PORT
 
 # Start the backend server
 CMD ["node", "api/index.js"] 

@@ -4,23 +4,34 @@ services:
   app:
     build: .
     ports:
-      - "3000:3000"
+      - "${FRONTEND_PORT:-3000}:${PORT:-3000}"
+    environment:
+      - NODE_ENV=production
+      - PORT=${PORT:-3000}
+      - NUXT_PUBLIC_API_URL=${NUXT_PUBLIC_API_URL:-http://backend:3001}
     depends_on:
-      - mongo
+      - backend
 
   backend:
     build:
       context: .
       dockerfile: backend/Dockerfile
     ports:
-      - "3001:3001"
+      - "${BACKEND_PORT:-3001}:${BACKEND_PORT:-3001}"
+    environment:
+      - NODE_ENV=production
+      - PORT=${BACKEND_PORT:-3001}
+      - MONGODB_URI=mongodb://${MONGO_USER:-}:${MONGO_PASSWORD:-}@${MONGO_HOST:-mongo}:${MONGO_PORT:-27017}/${MONGO_DB:-nuxtdb}${MONGO_OPTIONS:-}
     depends_on:
       - mongo
 
   mongo:
     image: mongo:latest
     ports:
-      - "27017:27017"
+      - "${MONGO_PORT:-27017}:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER:-}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:-}
     volumes:
       - mongo-data:/data/db
 
